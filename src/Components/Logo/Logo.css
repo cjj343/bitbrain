@@ -1,0 +1,8 @@
+.Tilt{
+	/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#FF6300+0,FF6300+100;Orange+Flat */
+	background: #FF6300; /* Old browsers */
+	background: -moz-linear-gradient(top, #FF6300 0%, #FF6300 100%); /* FF3.6-15 */
+	background: -webkit-linear-gradient(top, #FF6300 0%,#FF6300 100%); /* Chrome10-25,Safari5.1-6 */
+	background: linear-gradient(to bottom, #FF6300 0%,#FF6300 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#FF6300', endColorstr='#FF6300',GradientType=0 ); /* IE6-9 */
+}
