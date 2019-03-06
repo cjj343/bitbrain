@@ -29,28 +29,42 @@ class App extends Component {
 	  super();
 	  this.state = {
 		  input: '',
-		  imageUrl: ''
+		  imageUrl: '',
+		  box: {}
 	  }
   }
   
-  onInputChange = (event) => {
+ calculateFaceLocation = (data) => {
+	  const face = data.outputs[0].data.regions[0].region_info.bounding_box;
+	  const image = document.getElementById('input');
+	  const width = Number(image.width);
+	  const height = Number(image.height);
+	  console.log(width);
+	  console.log(height);
+	  return {
+		  leftCol: face.left_col * width,
+		  topRow: face.top_row * height,
+		  rightCol: width - (face.right_col * width),
+		  bottomRow : height - (face.bottom_row * height)
+	  }
+  }
+  
+  displayFaceBox = (box) => {
+	  this.setState({box: box});
+  }
+  
+ onInputChange = (event) => {
 	  this.setState({ input: event.target.value });
   }
   
   onButtonSubmit = () => {
 	this.setState({imageUrl: this.state.input});
-	app.models.predict(
-	Clarifai.FACE_DETECT_MODEL,
-		this.state.input
-	)
-	.then(function(response) {
-		console.log(response.outputs[0].data.regions[0].region_info.bounding_box);
-		},
-	function(err) {}
-	);
+	app.models.predict(Clarifai.FACE_DETECT_MODEL,this.state.input)
+	.then(response => this.displayFaceBox(this.calculateFaceLocation(response)))		
+	.catch(err => console.log(err));
   }
   
-  render() {
+ render() {
     return (
       <div className="App">
 		<Particles className='particles' params={particlesOptions}/>
@@ -58,7 +72,7 @@ class App extends Component {
 		<Logo />
 		<Rank />
 		<ImageLink onInputChange={this.onInputChange} onButtonSubmit={this.onButtonSubmit}/>	
-		<FaceRecog imageUrl={this.state.imageUrl} />
+		<FaceRecog box={this.state.box} imageUrl={this.state.imageUrl} />
       </div>
     );
   }
