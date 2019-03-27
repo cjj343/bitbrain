@@ -89,32 +89,46 @@ onRouteChange = (route) =>{
 	this.setState({route:route});
 }
   
-  onButtonSubmit = () => {
+onButtonSubmit = () => {
 	this.setState({imageUrl: this.state.input});
 	app.models.predict(Clarifai.FACE_DETECT_MODEL,this.state.input)
-	.then(response => this.displayFaceBox(this.calculateFaceLocation(response)))		
-	.catch(err => console.log(err));
-  }
+	.then(response => {
+		if(response){
+			fetch('http://localhost:3000/image', {
+				method: 'put',
+				headers: {'Content-Type': 'application/json'},
+				body: JSON.stringify({
+					id: this.state.user.id
+				})
+			})
+	.then(response => response.json())
+	.then(count => {
+		this.setState(Object.assign(this.state.user, {entries: count}))
+		})
+	}this.displayFaceBox(this.calculateFaceLocation(response))
+	}).catch(err => console.log(err));
+}
+
   
- render() {
-    return (
-      <div className="App">
-		<Particles className='particles' params={particlesOptions}/>
-		<Navigation onRouteChange={this.onRouteChange} isSignedIn={this.state.isSignedIn}/>
-		{this.state.route === 'home' 
-		?	<div>
-				<Logo />
-				<Rank name={this.state.user.name} entries = {this.state.user.entries} />
-				<ImageLink onInputChange={this.onInputChange} onButtonSubmit={this.onButtonSubmit}/>	
-				<FaceRecog box={this.state.box} imageUrl={this.state.imageUrl} />
-			</div>
-		: (this.state.route === 'signin' 
-		?	<SignIn loadUser = {this.loadUser} onRouteChange={this.onRouteChange} /> 
-		:	<Register loadUser = {this.loadUser} onRouteChange={this.onRouteChange} />
-		)}
-      </div>
-    );
-  }
+render() {
+		return (
+		  <div className="App">
+			<Particles className='particles' params={particlesOptions}/>
+			<Navigation onRouteChange={this.onRouteChange} isSignedIn={this.state.isSignedIn}/>
+			{this.state.route === 'home' 
+			?	<div>
+					<Logo />
+					<Rank name={this.state.user.name} entries = {this.state.user.entries} />
+					<ImageLink onInputChange={this.onInputChange} onButtonSubmit={this.onButtonSubmit}/>	
+					<FaceRecog box={this.state.box} imageUrl={this.state.imageUrl} />
+				</div>
+			: (this.state.route === 'signin' 
+			?	<SignIn loadUser = {this.loadUser} onRouteChange={this.onRouteChange} /> 
+			:	<Register loadUser = {this.loadUser} onRouteChange={this.onRouteChange} />
+			)}
+		  </div>
+		);
+	}
 }
 
 export default App;
